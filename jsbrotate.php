@@ -6,6 +6,7 @@ Description: Create a javascript-driven rotating banner image on your WordPress 
 Version: 1.1.1
 Author: Eric Mann
 Author URI: http://www.eamann.com
+License: GPLv2+
 */
 
 /*  Copyright 2009  Eric Mann  (email : eric@eamann.com)
