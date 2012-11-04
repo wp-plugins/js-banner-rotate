@@ -1,71 +1,68 @@
 <?php
-/*
-Plugin Name: JS Banner Rotate
-Plugin URI: http://www.jumping-duck.com/wordpress/
-Description: Create a JavaScript-driven rotating banner image on your WordPress site.
-Version: 1.3.3
-Author: Eric Mann
-Author URI: http://www.eamann.com
-License: GPLv2+
+/**
+ * Plugin Name: JS Banner Rotate
+ * Plugin URI: http://jumping-duck.com/wordpress/plugins/js-banner-rotate/
+ * Description: Create a JavaScript-driven rotating banner image on your WordPress site.
+ * Version: 2.0
+ * Author: Eric Mann
+ * Author URI: http://eamann.com
+ * License: GPLv2+
  */
 
-/* Copyright 2009-10  Eric Mann  (email : eric@eamann.com)
-
+/**
+ * Copyright 2009-12  Eric Mann, Jumping Duck Media
+ *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
-
+ * it under the terms of the GNU General Public License, version 2 or, at
+ * your discretion, any later version, as published by the Free
+ * Software Foundation.
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
-
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-/*
- * This plugin uses Javascript libraries originally developed by Yahoo.
- * Please refer to http://developer.yahoo.com/yui/ for more information on the YUI.
- */
-
 /* Define plugin variables */
-if( ! defined( 'JSB_VER' ))
-	define( 'JSB_VER', '1.3.1' );
-if( ! defined( 'JSB_BASE' ))
-	define( 'JSB_BASE' , dirname(__FILE__) );
-if( ! defined( 'JSB_DIRECTORY' ))
-	define( 'JSB_DIRECTORY' , get_option('siteurl') . '/wp-content/plugins/js-banner-rotate' );
-if( ! defined( 'JSB_INC' ))
-	define( 'JSB_INC' , JSB_DIRECTORY . '/includes' );
-if( ! defined( 'JSB_BASE_INC' ))
-	define( 'JSB_BASE_INC', JSB_BASE . '/includes' );
+define( 'JSB_DIRECTORY',     plugin_dir_url( __FILE__ ) );
+define( 'JSB_INC_DIRECTORY', dirname( __FILE__) . '/' );
 
 /* Check to see if this is a new installation or an upgrade */
-$current_ver = get_option('jsb_version');
-update_option('jsb_version', JSB_VER);
+delete_option( 'jsb_version' );
+update_option( 'js-banner-rotate-core', 2, '', 'no' );
 
-/*
- * Sets admin warnings regarding required PHP and WordPress versions.
+require_once( 'lib/class.js-banner-rotate.php' );
+require_once( 'lib/class.jsb-banner.php' );
+
+/**
+ * Shortcut function to manually invoke the rotating banner from PHP rather than through a shortcode.
+ *
+ * The options array:
+ * <code>
+ * $options = array(
+ *     'height'  => ...
+ *     'width'   => ...
+ *     'link'    => ...
+ *     'images'  => ...
+ *     'numvis'  => true/false
+ *     'imgdisp' => ...
+ *     'imgfade' => ...
+ * );
+ * </code>
+ *
+ * @param array $options
  */
-function _jsb_wp_warning() {
-	$data = get_plugin_data(__FILE__);
-	
-	echo '<div class="error"><p><strong>' . __('Warning:') . '</strong> '
-		. sprintf(__('The active plugin %s is not compatible with your WordPress version.') .'</p><p>',
-			'&laquo;' . $data['Name'] . ' ' . $data['Version'] . '&raquo;')
-		. sprintf(__('%s is required for this plugin.'), 'WordPress 2.8 ');
-	echo '</p></div>';
+function jsbrotate( $options ) {
+	JS_Banner_Rotate::jsbrotate( $options );
 }
 
-// START PROCEDURE
+// Wireup actions
+add_action( 'wp_enqueue_scripts',   array( 'JS_Banner_Rotate', 'enqueue_scripts' ) );
 
-// Check required WordPress version.
-if ( version_compare(get_bloginfo('version'), '2.8', '<')) {
-	add_action('admin_notices', '_jsb_wp_warning');
-} else {
-	include_once ( JSB_BASE_INC . '/core.php' );
-}
+// Wireup shortcodes
+add_shortcode( 'jsbrotate',         array( 'JS_Banner_Rotate', 'shortcode_handler' ) );
 ?>

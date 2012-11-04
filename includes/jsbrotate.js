@@ -1,37 +1,82 @@
-window.onload = jsbinit;
+/**
+ * Object that controls the image rotation.
+ *
+ * @param options Array of options, including the fade duration, interval timeout, and images to rotate through.
+ * @constructor
+ */
+var ImageRotator = function (options) {
+	var currentImage = 0,
+		fadeDuration = 4,
+		fadeInterval = 8,
+		images = [],
+		self = this;
 
-function jsbinit() {
-	var allBanners = document.getElementById("jsBanners").getElementsByTagName("span");
-	var totalBanners = allBanners.length;
-	var lastBanner = totalBanners - 1;
-	show = new Array();
-	hide = new Array();
-	for(var i = 0; i < allBanners.length; i++) {
-		show[i] = new YAHOO.util.Anim(allBanners[i], {opacity:{to:1}}, imgfade);
-		hide[i] = new YAHOO.util.Anim(allBanners[i], {opacity:{to:0}}, imgfade);
-	}
-	var k = 0;
-	for(var j=0; j < allBanners.length - 1; j++) {
-		createListener(j);							
-	}
-	show[lastBanner].onComplete.subscribe(function() {createNext(lastBanner, true);});
-	
-	show[0].animate();
-}
-function createNext(id, last) {
-	if(last==false) {
-		setTimeout(function() {
-			hide[id].animate();
-			show[(id+1)].animate();
-			}, imgdisp);
-	} else {
-		setTimeout(function() {
-			hide[id].animate();
-			show[0].animate();
-			}, imgdisp);
-	}
-}
+	/**
+	 * Attempt to preload images into the browser so large images won't cause a delay when rotated through.
+	 */
+	this.preloadImages = function () {
+		var i,
+			preload_image_obj;
 
-function createListener(id) {
-	show[id].onComplete.subscribe(function() {createNext(id, false);});
-}
+		if (document.images) {
+			for (i = 0; i < images.length; i += 1) {
+				preload_image_obj = new Image();
+				preload_image_obj.src = images[i];
+			}
+		}
+	};
+
+	/**
+	 * Fade the images.
+	 *
+	 * - Copy the image in the foreground to the background
+	 * - Hide the foreground image
+	 * - Replace the hidden foreground image with the next in the rotation
+	 * - Fade the foreground image back in.
+	 */
+	this.fadeImage = function () {
+		var imageEl = jQuery('#rotating-images'),
+			top = imageEl.find('.top-layer'),
+			bottom = imageEl.find('.bottom-layer');
+
+		currentImage += 1;
+
+		if (currentImage >= images.length) {
+			currentImage = 0;
+		}
+
+		bottom.css('backgroundImage', top.css('backgroundImage'));
+		top.stop().hide();
+		top.css('backgroundImage', 'url(' + images[currentImage] + ')');
+		top.fadeIn(fadeDuration * 1000, function () {
+			setTimeout(self.fadeImage, fadeInterval * 1000);
+		});
+	};
+
+	if ('undefined' !== typeof options.images) {
+		images = options.images;
+	}
+
+	if ('undefined' !== typeof options.display) {
+		self.fadeInterval = options.display;
+	}
+
+	if ('undefined' !== typeof options.fade) {
+		fadeDuration = options.fade;
+	}
+};
+
+
+jQuery(document).ready(function () {
+	var options = {
+		images: window.images,
+		display: window.jsb_options.display,
+		fade: window.jsb_options.fade
+	},
+		rotator = new ImageRotator(options);
+
+	// The first image in the rotation will always be loaded. Attempt to load the others so the queue moves quickly.
+	rotator.preloadImages();
+
+	setTimeout(rotator.fadeImage, window.jsb_options.display * 1000);
+});
