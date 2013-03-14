@@ -1,12 +1,12 @@
 <?php
 /**
  * Plugin Name: JS Banner Rotate
- * Plugin URI: http://jumping-duck.com/wordpress/plugins/js-banner-rotate/
+ * Plugin URI:  http://jumping-duck.com/wordpress/plugins/js-banner-rotate/
  * Description: Create a JavaScript-driven rotating banner image on your WordPress site.
- * Version: 2.0.1
- * Author: Eric Mann
- * Author URI: http://eamann.com
- * License: GPLv2+
+ * Version:     2.0.2
+ * Author:      Eric Mann
+ * Author URI:  http://eamann.com
+ * License:     GPLv2+
  */
 
 /**

@@ -13,9 +13,9 @@ class JS_Banner_Rotate {
 	 * @since 1.4
 	 */
 	public static function enqueue_scripts() {
-		wp_enqueue_script( 'jsb-rotate', JSB_DIRECTORY . '/includes/jsbrotate.js', array( 'jquery' ), '2.0', true );
+		wp_enqueue_script( 'jsb-rotate', JSB_DIRECTORY . '/includes/jsbrotate.js', array( 'jquery' ), '2.0.2', true );
 
-		wp_enqueue_style( 'jsb-rotate', JSB_DIRECTORY . '/includes/jsbrotate.css', '', '2.0', 'screen' );
+		wp_enqueue_style( 'jsb-rotate', JSB_DIRECTORY . '/includes/jsbrotate.css', '', '2.0.2', 'screen' );
 	}
 
 	/**

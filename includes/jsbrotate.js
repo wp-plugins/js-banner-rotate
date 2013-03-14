@@ -58,7 +58,7 @@ var ImageRotator = function (options) {
 	}
 
 	if ('undefined' !== typeof options.display) {
-		self.fadeInterval = options.display;
+		fadeInterval = options.display;
 	}
 
 	if ('undefined' !== typeof options.fade) {
